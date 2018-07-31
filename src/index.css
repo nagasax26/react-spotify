@@ -1,5 +1,110 @@
-body {
+@import url('https://fonts.googleapis.com/css?family=Merriweather:300,400,700|Open+Sans:300,400,700');
+
+*,*::before, *::after{
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  box-sizing: inherit;
+}
+body {
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.tracks-warp{
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10rem;
+}
+
+.track-box{
+  padding: 10px;
+  flex: 0 0 25%;
+}
+
+.track{
+  background: #00a8ff;
+  background: #EA2027;
+  text-align: center;
+}
+
+.track__artist{
+  font-family: 'Merriweather', sans-serif;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.track__name{
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.navbar{
+  background: #3d3d3d;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.default-bar{
+  height: 10px;
+  background-color: #2d3436;
+  position: relative;
+}
+
+.bar{
+  position: absolute;
+  height: 10px;
+  background-color: #3ae374;
+}
+
+.btn{
+  width: 40px;
+  height: 40px;
+  /* border-radius: 50%; */
+  /* background: #3d3d3d; */
+  background: none;
+  border: none;
+  position: relative;
+  margin-right: 10px; 
+  cursor: pointer;
+}
+
+.btn:focus{
+  outline: none;
+}
+
+.btn-icon{
+  position: absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: #27ae60;
+  height: 60%;
+  width: 60%;
+}
+
+.player{
+  display: flex;
+  align-items: center;
+}
+
+.player__buttons{
+  margin-right: 16px;
+}
+
+.player__artist{
+  color: #27ae60;
+  font-size: 20px;
+  font-family: 'Merriweather', sans-serif;
+  font-weight: 300;
+}
+
+.player__time{
+  color: #fff;
+  font-size: 18px;
+  margin-left: auto;
+  margin-right: 16px;
 }
