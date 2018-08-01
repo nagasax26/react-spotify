@@ -26,6 +26,7 @@ class TrackItem extends Component {
                 <button className="btn" onClick={this.handleClickPlay}>
                     <svg className="btn-icon">
                         <use xlinkHref="/sprite.svg#icon-play3">
+                            Play
                         </use>
                     </svg>
                 </button>
