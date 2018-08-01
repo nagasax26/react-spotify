@@ -4,13 +4,18 @@ import axios from 'axios';
 import Search from './Search';
 import TrackList from './TrackList';
 import Player from './Player';
+import InfiniteScroll from 'react-infinite-scroller';
+
 
 class App extends Component {
   constructor() {
     super();
     this.apiUrl = "https://api.spotify.com/v1";
-    this.token = "BQBx4uh79CjI4m4B81bHA0VaqHQ7pJzkOrRJTu5hC1n6PuukB6uQC75p8yuIYLVH_tW6J_ENcEzCzthvVqE150NOIX868cacS37kZwPhDjhHXk_K52iC2hJvOWTGx3kbwsHkyaNP4CWiy6POGsLDCYrnGCGf1JJc&";
+    this.token = "BQAtsFmK05mtFeuF1JxaGaTxVND3WQlfOIsRA6lxsCThO5tdcur_8QORT4RTjeiKy-FcE7NOvWKZV1tegR03Mw49x4wZhkW6KmlXm0oWPT58LMD_54nc-yeT2IjiOIII2VW8J8COPYzNxBMRnh3DKCiqJIDZ0CHI&refresh_token=AQD758cXFMnm3BdHeMx0Hcpnoc4ZpdORbrmlpi6jIi7PsjgmhWxnrz6foYdK6twmu_U33SQEqpV7Ky2s5WL8rVztcqH8hPjG7yBoekt_afd42Lip6LBZF4pZTzJeMQ5y4Cw";
     this.auth = { headers: { Authorization: `Bearer ${this.token}` } };
+    this.categoryNumber = 0;
+    this.playlistNumber = 0;
+    this.changeCategory = false;
 
     this.setTrackList = this.setTrackList.bind(this);
     this.getCategories = this.getCategories.bind(this);
@@ -19,6 +24,8 @@ class App extends Component {
     this.setPreviousTrack = this.setPreviousTrack.bind(this);
     this.setNextTrack = this.setNextTrack.bind(this);
     this.setActiveSong = this.setActiveSong.bind(this);
+    this.removeDuplicate = this.removeDuplicate.bind(this);
+    this.loadFunc = this.loadFunc.bind(this);
 
     this.state = { autoPlay: false, activeSong: {}, showPlayer: false, tracks: [] };
   }
@@ -29,21 +36,41 @@ class App extends Component {
   getCategories() {
     axios.get(`${this.apiUrl}/browse/categories`, this.auth)
       .then(res => {
-        let categoryId = res.data.categories.items[0].id;
+        // this need to be flatten 
+        // need * to get all ids from all the category..
+        if (this.categoryNumber === res.data.categories.items.length)
+          return;
+        let categoryId;
+        if (this.changeCategory)
+          categoryId = res.data.categories.items[this.categoryNumber++].id;
+        else
+          categoryId = res.data.categories.items[this.categoryNumber].id;
         this.getCategoriesPlaylist(categoryId);
       });
   }
   getCategoriesPlaylist(categoryId) {
     axios.get(`${this.apiUrl}/browse/categories/${categoryId}/playlists`, this.auth)
-      .then(res => this.getPlaylistTracks(res.data.playlists.items[0].id));
+      .then(res => {
+        // the res need to be flatten to display single array
+        // need to be mapped to single ids
+        if (this.playlistNumber === res.data.playlists.items.length) {
+          this.playlistNumber = 0;
+          this.changeCategory = true;
+          return;
+        }
+        this.getPlaylistTracks(res.data.playlists.items[this.playlistNumber++].id);
+      });
   }
   getPlaylistTracks(playlistId) {
     axios.get(`${this.apiUrl}/users/smarts003/playlists/${playlistId}/tracks`, this.auth)
       .then(res => {
+        let tracksFromState = this.state.tracks.concat();
         let tracks =
           res.data.items.filter(item => item.track.preview_url)
             .map(item => item.track);
-        this.setState({ tracks: tracks, activeSong: tracks[0] });
+        let combined = this.removeDuplicate([...tracksFromState, ...tracks]);
+        // this.setState({ tracks: combined, activeSong: combined[0] });
+        this.setState({ tracks: combined });
       });
   }
   setPreviousTrack() {
@@ -71,6 +98,20 @@ class App extends Component {
   pad(number) {
     return number < 10 ? '0' + number : number;
   }
+  loadFunc() {
+    this.getCategories(1);
+  }
+  removeDuplicate(arr) {
+    let obj = {};
+    let arr2 = [];
+    for (let i = 0; i < arr.length; i++) {
+      if (!obj[arr[i].id]) {
+        arr2.push(arr[i]);
+        obj[arr[i].id] = true;
+      }
+    }
+    return arr2;
+  }
   render() {
     return (
       <div className="App">
@@ -80,7 +121,14 @@ class App extends Component {
           auth={this.auth}
           setTrackList={this.setTrackList} />
 
-        <TrackList setActiveSong={this.setActiveSong} pad={this.pad} tracks={this.state.tracks} />
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={this.loadFunc}
+          hasMore={true || false}
+          loader={<div className="loader" key={0}>Loading ...</div>}>
+          <TrackList setActiveSong={this.setActiveSong} pad={this.pad} tracks={this.state.tracks} />
+        </InfiniteScroll>
+
         {this.state.showPlayer &&
           <Player pad={this.pad} autoPlay={this.state.autoPlay}
             setNextTrack={this.setNextTrack}
