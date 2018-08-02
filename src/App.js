@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import Search from './Search';
 import TrackList from './TrackList';
 import Player from './Player';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -10,31 +9,36 @@ import InfiniteScroll from 'react-infinite-scroller';
 class App extends Component {
   constructor() {
     super();
-    this.apiUrl = "https://api.spotify.com/v1";
-    this.token = "BQAtsFmK05mtFeuF1JxaGaTxVND3WQlfOIsRA6lxsCThO5tdcur_8QORT4RTjeiKy-FcE7NOvWKZV1tegR03Mw49x4wZhkW6KmlXm0oWPT58LMD_54nc-yeT2IjiOIII2VW8J8COPYzNxBMRnh3DKCiqJIDZ0CHI&refresh_token=AQD758cXFMnm3BdHeMx0Hcpnoc4ZpdORbrmlpi6jIi7PsjgmhWxnrz6foYdK6twmu_U33SQEqpV7Ky2s5WL8rVztcqH8hPjG7yBoekt_afd42Lip6LBZF4pZTzJeMQ5y4Cw";
-    this.auth = { headers: { Authorization: `Bearer ${this.token}` } };
+    // this.props.apiUrl = "https://api.spotify.com/v1";
+    // this.props.token = "BQAD5q40Yejz-nxLQY_Mh64ws6z4XtjiqjKrIV4fUvv773HgmAlJ12YH-bZ4bM5ggrMlG1m589GEkoUvF8oh_yYu05ZP9giiG43kixUSjU3U0DFmXmZ_w3pNxixH5oQUjF6mEaP2oLcmQw8P22sTfmHiDRvYB2qY&refresh_token=AQBXBfEAfUfy9EBLAbTlIUFeBITSQCun_uMXc62PMrDxoj0wtC0FUGXkmMpTz0a95FkpnIiyUKmMyt4Omf-to8tw4fdqLYQZyUN4bnZ21IW56CeR7o9S5syAu_KCbqfybzM";
+    // this.props.auth = { headers: { Authorization: `Bearer ${this.props.token}` } };
+
     this.categoryNumber = 0;
     this.playlistNumber = 0;
     this.changeCategory = false;
 
-    this.setTrackList = this.setTrackList.bind(this);
+    // this.setTrackList = this.setTrackList.bind(this);
+
     this.getCategories = this.getCategories.bind(this);
     this.getCategoriesPlaylist = this.getCategoriesPlaylist.bind(this);
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
+
     this.setPreviousTrack = this.setPreviousTrack.bind(this);
     this.setNextTrack = this.setNextTrack.bind(this);
     this.setActiveSong = this.setActiveSong.bind(this);
+
     this.removeDuplicate = this.removeDuplicate.bind(this);
+
     this.loadFunc = this.loadFunc.bind(this);
 
-    this.state = { autoPlay: false, activeSong: {}, showPlayer: false, tracks: [] };
+    this.state = { autoPlay: false, activeSong: {}, showPlayer: false };
   }
 
-  setTrackList(tracks) {
-    this.setState({ tracks: tracks });
-  }
+  // setTrackList(tracks) {
+  //   this.setState({ tracks: tracks });
+  // }
   getCategories() {
-    axios.get(`${this.apiUrl}/browse/categories`, this.auth)
+    axios.get(`${this.props.apiUrl}/browse/categories`, this.props.auth)
       .then(res => {
         // this need to be flatten 
         // need * to get all ids from all the category..
@@ -49,7 +53,7 @@ class App extends Component {
       });
   }
   getCategoriesPlaylist(categoryId) {
-    axios.get(`${this.apiUrl}/browse/categories/${categoryId}/playlists`, this.auth)
+    axios.get(`${this.props.apiUrl}/browse/categories/${categoryId}/playlists`, this.props.auth)
       .then(res => {
         // the res need to be flatten to display single array
         // need to be mapped to single ids
@@ -62,35 +66,35 @@ class App extends Component {
       });
   }
   getPlaylistTracks(playlistId) {
-    axios.get(`${this.apiUrl}/users/smarts003/playlists/${playlistId}/tracks`, this.auth)
+    axios.get(`${this.props.apiUrl}/users/smarts003/playlists/${playlistId}/tracks`, this.props.auth)
       .then(res => {
-        let tracksFromState = this.state.tracks.concat();
+        let tracksFromProps = this.props.tracks.concat();
         let tracks =
           res.data.items.filter(item => item.track.preview_url)
             .map(item => item.track);
-        let combined = this.removeDuplicate([...tracksFromState, ...tracks]);
-        // this.setState({ tracks: combined, activeSong: combined[0] });
-        this.setState({ tracks: combined });
+        let combined = this.removeDuplicate([...tracksFromProps, ...tracks]);
+        // this.setState({ tracks: combined });
+        this.props.setTrackList(combined);
       });
   }
   setPreviousTrack() {
-    let getTrackIndex = this.state.tracks.findIndex(track => track.id === this.state.activeSong.id);
-    let prevIndex = getTrackIndex === 0 ? this.state.tracks.length - 1 : getTrackIndex - 1;
-    this.setState({ autoPlay: true, activeSong: this.state.tracks[prevIndex] });
+    let getTrackIndex = this.props.tracks.findIndex(track => track.id === this.state.activeSong.id);
+    let prevIndex = getTrackIndex === 0 ? this.props.tracks.length - 1 : getTrackIndex - 1;
+    this.setState({ autoPlay: true, activeSong: this.props.tracks[prevIndex] });
   }
   setNextTrack() {
-    let getTrackIndex = this.state.tracks.findIndex(track => track.id === this.state.activeSong.id);
-    if (getTrackIndex === this.state.tracks.length - 1) {
-      this.setState({ autoPlay: false, activeSong: this.state.tracks[0] });
+    let getTrackIndex = this.props.tracks.findIndex(track => track.id === this.state.activeSong.id);
+    if (getTrackIndex === this.props.tracks.length - 1) {
+      this.setState({ autoPlay: false, activeSong: this.props.tracks[0] });
     }
     else {
-      let nextIndex = (getTrackIndex + 1) % this.state.tracks.length;
-      this.setState({ autoPlay: true, activeSong: this.state.tracks[nextIndex] });
+      let nextIndex = (getTrackIndex + 1) % this.props.tracks.length;
+      this.setState({ autoPlay: true, activeSong: this.props.tracks[nextIndex] });
     }
   }
   setActiveSong(trackId) {
-    let getTrackIndex = this.state.tracks.findIndex(track => track.id === trackId);
-    this.setState({ showPlayer: true, autoPlay: true, activeSong: this.state.tracks[getTrackIndex] })
+    let getTrackIndex = this.props.tracks.findIndex(track => track.id === trackId);
+    this.setState({ showPlayer: true, autoPlay: true, activeSong: this.props.tracks[getTrackIndex] })
   }
   componentDidMount() {
     this.getCategories();
@@ -115,18 +119,15 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Search
-          apiUrl={this.apiUrl}
-          token={this.token}
-          auth={this.auth}
-          setTrackList={this.setTrackList} />
+
 
         <InfiniteScroll
+          useWindow={false}
           pageStart={0}
           loadMore={this.loadFunc}
           hasMore={true || false}
           loader={<div className="loader" key={0}>Loading ...</div>}>
-          <TrackList setActiveSong={this.setActiveSong} pad={this.pad} tracks={this.state.tracks} />
+          <TrackList setActiveSong={this.setActiveSong} pad={this.pad} tracks={this.props.tracks} />
         </InfiniteScroll>
 
         {this.state.showPlayer &&
