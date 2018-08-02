@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
 import axios from 'axios';
+import { withRouter } from 'react-router-dom';
 
 class Album extends Component {
     constructor(props) {
         super();
         // console.log(props);
+        this.handleClick = this.handleClick.bind(this);
         this.state = { tracks: [] }
     }
     componentDidMount() {
@@ -13,12 +15,18 @@ class Album extends Component {
                 this.setState({ tracks: res.data.items });
             });
     }
+
+    handleClick() {
+        console.log(this.props)
+        this.props.history.push({pathname:'/tracks', myData:this.props})
+    }
+
     render() {
         return (
             <div className="album-box">
                 <div className="album">
                     <div className="album__details">
-                        <img className="album__image" src={this.props.images[0].url} alt="" />
+                        <img className="album__image" src={this.props.images[0].url} alt="" onClick={this.handleClick} />
                     </div>
                     <div>
                         <p className="album__detail-name">{this.props.name}</p>
@@ -32,4 +40,4 @@ class Album extends Component {
     }
 }
 
-export default Album;
+export default withRouter(Album);
