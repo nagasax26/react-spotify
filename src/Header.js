@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Search from './Search';
+import Player from './Player';
 
 export default class Header extends Component {
     render() {
@@ -24,6 +25,12 @@ export default class Header extends Component {
                     <li className="nav-bar__item"><Link className="nav-bar__link" to="/albums">Albums</Link></li>
                 </ul>
                 <div className="nav-bar__divider"></div>
+                {this.props.showPlayer &&
+                    <Player pad={this.props.pad} autoPlay={this.props.autoPlay}
+                        setNextTrack={this.props.setNextTrack}
+                        setPreviousTrack={this.props.setPreviousTrack}
+                        activeSong={this.props.activeSong} />
+                }
             </header>
 
         )

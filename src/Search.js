@@ -15,7 +15,7 @@ class Search extends Component {
         axios.get(`${this.props.apiUrl}/search?q=${this.state.searchText}&type=track`, this.props.auth)
             .then(res => {
                 let tracks = res.data.tracks.items.filter(item => item.preview_url);
-                this.props.setTrackList(tracks);
+                this.props.setTrackList(tracks, true);
             });
         this.setState({ searchText: "" });
     }

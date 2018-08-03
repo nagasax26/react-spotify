@@ -21,7 +21,8 @@ body {
   background: #2c3e50;
   /* padding: 16px 0; */
   
-  flex: 0 0 15%;
+  flex: 0 0 20%;
+  position: relative;
 }
 .nav-bar__nav{
   list-style: none;
@@ -137,39 +138,49 @@ body {
 
 .navbar{
   background: #3d3d3d;
-  position: fixed;
+  position: absolute;
   bottom: 0;
-  width: 84%;
+  width: 100%;
 }
 
 .default-bar{
-  height: 10px;
+  height: 5px;
   background-color: #2d3436;
   position: relative;
 }
 
 .bar{
   position: absolute;
-  height: 10px;
+  height: 100%;
   background-color: #3ae374;
 }
 
 .btn{
   width: 40px;
   height: 40px;
-  /* border-radius: 50%; */
-  /* background: #3d3d3d; */
   background: none;
   border: none;
   position: relative;
-  margin-right: 10px; 
   cursor: pointer;
+  flex: 0 0 33.3333%;
 }
 
 .btn:focus{
   outline: none;
 }
 
+.btn--l{
+  width: 50px;
+  height: 50px;
+}
+
+.btn--s{
+  width: 30px;
+  height: 30px;
+}
+.btn--s svg{
+  fill: #fff;
+}
 .btn-icon{
   position: absolute;
   top:50%;
@@ -191,24 +202,48 @@ body {
 .player{
   display: flex;
   align-items: center;
+  flex-direction: column;
 }
 
-.player__buttons{
-  margin-right: 16px;
+.player__img-box{
+  position: relative;  
+}
+
+.player__img{
+  width: 100%;
+  filter: opacity(.65);
 }
 
 .player__artist{
-  color: #27ae60;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #fff;
   font-size: 20px;
   font-family: 'Merriweather', sans-serif;
-  font-weight: 300;
+  font-weight: 700;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, .6);
 }
+
+.player__artist-name:hover{
+  text-decoration: underline;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.player__buttons{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+}
+
+
 
 .player__time{
   color: #fff;
   font-size: 18px;
-  margin-left: auto;
-  margin-right: 16px;
+  /* margin-left: auto; */
+  /* margin-right: 16px; */
 }
 
 /* Albums Styles */
@@ -267,3 +302,48 @@ body {
 /* .album__track:not(:last-child){
   border-bottom: 2px solid rgba(0, 0, 0, .2);
 } */
+.album-detail-box{
+  flex: 1;;
+  overflow: auto;
+  padding: 0 25px;
+}
+.album-detail{
+  display: flex;
+  margin: 30px;
+}
+
+.tracklist{
+  margin-bottom: 20px;
+}
+
+.track-detail{
+  display: flex;
+  justify-content: space-between;
+  margin: 0 30px;
+  padding: 16px 10px;
+  border-top: 1px solid rgba(0,0,0,.2);
+}
+
+.track-detail:hover{
+  background: #efeff2;
+  cursor: pointer;
+}
+
+.button{
+  padding: 5px 10px;
+    margin-left: 37px;
+    margin-bottom: 22px;
+    border: 1px solid #2e6da4;
+    /* color: white; */
+    font-weight: 400;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #fff;
+    background-color: #337ab7;
+    font-family: "Open Sans",sans-serif;
+}
+
+.loader{
+  text-align: center;
+}

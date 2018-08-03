@@ -11,7 +11,8 @@ class Player extends Component {
             currentTime: "00:00",
             width: 0,
             buttonPlay: '/sprite.svg#icon-play3',
-            buttonMute: '/sprite.svg#icon-volume-high'
+            buttonMute: '/sprite.svg#icon-volume-high',
+            isClicked: false
         };
     }
     playOrPause = () => {
@@ -25,12 +26,12 @@ class Player extends Component {
     muteOrUnmute = () => {
         if (this.rap.audioEl.muted) {
             this.rap.audioEl.muted = false;
-            this.setState({ buttonMute: '/sprite.svg#icon-volume-high' });
+            this.setState({ isClicked: !this.state.isClicked, buttonMute: '/sprite.svg#icon-volume-high' });
         }
         else {
 
             this.rap.audioEl.muted = true;
-            this.setState({ buttonMute: '/sprite.svg#icon-volume-mute' });
+            this.setState({ isClicked: !this.state.isClicked, buttonMute: '/sprite.svg#icon-volume-mute' });
         }
     }
     onListen = () => {
@@ -84,10 +85,18 @@ class Player extends Component {
                     listenInterval={500}
                     onListen={this.onListen}
                     src={this.props.activeSong.preview_url} />
+                <div className="player__img-box">
+                    <img className="player__img" src={this.props.activeSong.album.images[0].url} alt="" />
+                    <div className="player__artist">
+                        <span className="player__artist-name" >{this.props.activeSong.name}</span>
+                        <div style={{ fontFamily: "'Open Sans', sans-serif", fontSize: "16px", color: "#3ae374" }}>by {artistsName}</div>
+                    </div>
+                </div>
                 <div ref={element => { this.defaultBar = element; }} className="default-bar">
                     <div className="bar" style={{ width: this.state.width + 'px' }} ></div>
                 </div>
                 <div className="player">
+
                     <div className="player__buttons">
                         <button className="btn" onClick={this.prev}>
                             <svg className="btn-icon">
@@ -95,7 +104,7 @@ class Player extends Component {
                                 </use>
                             </svg>
                         </button>
-                        <button className="btn" onClick={this.playOrPause}>
+                        <button className="btn btn--l" onClick={this.playOrPause}>
                             <svg className="btn-icon">
                                 <use xlinkHref={this.state.buttonPlay}>
                                 </use>
@@ -108,16 +117,14 @@ class Player extends Component {
                             </svg>
                         </button>
 
-                        <button className="btn" onClick={this.muteOrUnmute}>
-                            <svg className="btn-icon">
+                        <button className="btn btn--s" onClick={this.muteOrUnmute}>
+                            <svg style={{ fill: this.state.isClicked ? "#00a8ff" : "#fff" }} className="btn-icon">
                                 <use xlinkHref={this.state.buttonMute}>
                                 </use>
                             </svg>
                         </button>
                     </div>
-                    <div className="player__artist">
-                        <span>{this.props.activeSong.name} - {artistsName}</span>
-                    </div>
+
                     <div className="player__time">
                         <span>{this.state.currentTime}</span>/
                         <span>{this.getTrackTime().minutes}:{this.getTrackTime().seconds}</span>
