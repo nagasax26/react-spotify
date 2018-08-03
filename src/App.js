@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
 import TrackList from './TrackList';
-import Player from './Player';
 import InfiniteScroll from 'react-infinite-scroller';
 
 
@@ -23,15 +22,14 @@ class App extends Component {
     this.getCategoriesPlaylist = this.getCategoriesPlaylist.bind(this);
     this.getPlaylistTracks = this.getPlaylistTracks.bind(this);
 
-    this.setPreviousTrack = this.setPreviousTrack.bind(this);
-    this.setNextTrack = this.setNextTrack.bind(this);
-    this.setActiveSong = this.setActiveSong.bind(this);
+
 
     this.removeDuplicate = this.removeDuplicate.bind(this);
 
     this.loadFunc = this.loadFunc.bind(this);
-
-    this.state = { autoPlay: false, activeSong: {}, showPlayer: false };
+    this.changeActive = true;
+    this.isCalledFirstTime = true;
+    // this.state = { autoPlay: false, activeSong: {}, showPlayer: false };
   }
 
   // setTrackList(tracks) {
@@ -74,36 +72,22 @@ class App extends Component {
             .map(item => item.track);
         let combined = this.removeDuplicate([...tracksFromProps, ...tracks]);
         // this.setState({ tracks: combined });
-        this.props.setTrackList(combined);
+
+        this.props.setTrackList(combined, this.changeActive);
       });
   }
-  setPreviousTrack() {
-    let getTrackIndex = this.props.tracks.findIndex(track => track.id === this.state.activeSong.id);
-    let prevIndex = getTrackIndex === 0 ? this.props.tracks.length - 1 : getTrackIndex - 1;
-    this.setState({ autoPlay: true, activeSong: this.props.tracks[prevIndex] });
-  }
-  setNextTrack() {
-    let getTrackIndex = this.props.tracks.findIndex(track => track.id === this.state.activeSong.id);
-    if (getTrackIndex === this.props.tracks.length - 1) {
-      this.setState({ autoPlay: false, activeSong: this.props.tracks[0] });
-    }
-    else {
-      let nextIndex = (getTrackIndex + 1) % this.props.tracks.length;
-      this.setState({ autoPlay: true, activeSong: this.props.tracks[nextIndex] });
-    }
-  }
-  setActiveSong(trackId) {
-    let getTrackIndex = this.props.tracks.findIndex(track => track.id === trackId);
-    this.setState({ showPlayer: true, autoPlay: true, activeSong: this.props.tracks[getTrackIndex] })
-  }
+
   componentDidMount() {
     this.getCategories();
   }
-  pad(number) {
-    return number < 10 ? '0' + number : number;
-  }
+
   loadFunc() {
-    this.getCategories(1);
+    if (this.isCalledFirstTime) {
+      this.isCalledFirstTime = false;
+      return;
+    }
+    this.changeActive = false;
+    this.getCategories();
   }
   removeDuplicate(arr) {
     let obj = {};
@@ -127,15 +111,10 @@ class App extends Component {
           loadMore={this.loadFunc}
           hasMore={true || false}
           loader={<div className="loader" key={0}>Loading ...</div>}>
-          <TrackList setActiveSong={this.setActiveSong} pad={this.pad} tracks={this.props.tracks} />
+          <TrackList setActiveSong={this.props.setActiveSong} pad={this.props.pad} tracks={this.props.tracks} />
         </InfiniteScroll>
 
-        {this.state.showPlayer &&
-          <Player pad={this.pad} autoPlay={this.state.autoPlay}
-            setNextTrack={this.setNextTrack}
-            setPreviousTrack={this.setPreviousTrack}
-            activeSong={this.state.activeSong} />
-        }
+
       </div>
 
     );

@@ -7,7 +7,7 @@ class Album extends Component {
         super();
         // console.log(props);
         this.handleClick = this.handleClick.bind(this);
-        this.state = { tracks: [] }
+        this.state = { tracks: [] };
     }
     componentDidMount() {
         axios.get(`${this.props.apiUrl}/albums/${this.props.id}/tracks`, this.props.auth)
@@ -17,8 +17,7 @@ class Album extends Component {
     }
 
     handleClick() {
-        console.log(this.props)
-        this.props.history.push({pathname:'/tracks', myData:this.props})
+        this.props.history.push({ pathname: `${this.props.match.path}/${this.props.id}/tracks`, myData: { ...this.props, tracks: this.state.tracks } })
     }
 
     render() {
